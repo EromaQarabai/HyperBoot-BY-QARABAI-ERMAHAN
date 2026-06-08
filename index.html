@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ermahan Boot — Magisk Module</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1e1e1e;
+    --border-bright: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #555;
+    --accent: #f0f0f0;
+    --orange: #ff6b2b;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--orange);
+  }
+
+  .hero h1 {
+    font-family: var(--sans);
+    font-size: clamp(36px, 7vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span {
+    color: var(--orange);
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 500px;
+    margin-bottom: 32px;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border-bright);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .badge.orange { border-color: var(--orange); color: var(--orange); }
+
+  /* SPECS BAR */
+  .specs-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border);
+    margin: 40px 0;
+  }
+  .spec {
+    padding: 24px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .spec:last-child { border-right: none; }
+  .spec-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .spec-value {
+    font-family: var(--sans);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0 20px;
+    position: relative;
+  }
+  .step-num {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--orange);
+    padding-top: 2px;
+    text-align: right;
+  }
+  .step-content {
+    padding-bottom: 24px;
+    border-left: 1px solid var(--border);
+    padding-left: 20px;
+    margin-left: -1px;
+  }
+  .step:last-child .step-content { border-left-color: transparent; }
+  .step-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .step-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  code {
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text);
+  }
+
+  /* WARNING BOX */
+  .warning {
+    border: 1px solid #3a2a1a;
+    background: #1a1208;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 12px;
+    color: #aa7744;
+    line-height: 1.6;
+  }
+  .warning strong { color: var(--orange); }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  .status-ok {
+    color: #4caf50;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* CODE BLOCK */
+  .codeblock {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: #888;
+    overflow-x: auto;
+  }
+  .codeblock .key { color: var(--orange); }
+  .codeblock .val { color: var(--text); }
+  .codeblock .comment { color: #333; }
+
+  /* FILE TREE */
+  .tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 2;
+    color: var(--muted);
+  }
+  .tree .dir { color: var(--accent); }
+  .tree .file { color: #666; }
+  .tree .highlight { color: var(--orange); }
+
+  /* FOOTER */
+  .footer {
+    padding-top: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .author-block { }
+  .author-name {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .author-links {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+  }
+  .author-links a {
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+  .author-links a:hover { color: var(--orange); }
+
+  .made-in {
+    font-size: 11px;
+    color: #333;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* Download CTA */
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--orange);
+    color: #000;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 12px 24px;
+    text-decoration: none;
+    margin-top: 32px;
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
+  .cta:hover { opacity: 0.85; }
+  .cta-arrow { font-size: 16px; }
+
+  /* Animate on load */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero, section {
+    animation: fadeUp 0.5s ease both;
+  }
+  section:nth-child(2) { animation-delay: 0.05s; }
+  section:nth-child(3) { animation-delay: 0.10s; }
+  section:nth-child(4) { animation-delay: 0.15s; }
+  section:nth-child(5) { animation-delay: 0.20s; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Magisk / KernelSU Module</div>
+    <h1>Ermahan<br><span>Boot</span></h1>
+    <p class="hero-sub">
+      A clean, minimal custom bootanimation for all HyperOS devices with root access.
+      Handcrafted frame-by-frame using FFmpeg. No bloat. Just a better boot experience.
+    </p>
+    <div class="badges">
+      <span class="badge orange">v1.0</span>
+      <span class="badge">HyperOS</span>
+      <span class="badge">Magisk</span>
+      <span class="badge">KernelSU</span>
+      <span class="badge">Root Required</span>
+      <span class="badge">MIT License</span>
+    </div>
+    <a class="cta" href="#">
+      Download ZIP <span class="cta-arrow">↓</span>
+    </a>
+  </div>
+
+  <!-- SPECS -->
+  <div class="specs-bar">
+    <div class="spec">
+      <div class="spec-label">Resolution</div>
+      <div class="spec-value">1080×2400</div>
+    </div>
+    <div class="spec">
+      <div class="spec-label">Frame Rate</div>
+      <div class="spec-value">30 fps</div>
+    </div>
+    <div class="spec">
+      <div class="spec-label">Style</div>
+      <div class="spec-value">Minimal</div>
+    </div>
+  </div>
+
+  <!-- INSTALL -->
+  <section>
+    <div class="section-label">Installation</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Download</div>
+          <div class="step-desc">Grab the latest <code>.zip</code> from the Releases tab above.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Open Magisk or KernelSU</div>
+          <div class="step-desc">Navigate to Modules → Install from storage.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Select the ZIP</div>
+          <div class="step-desc">Pick the downloaded file and wait for the flash to complete.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-title">Reboot</div>
+          <div class="step-desc">Your new bootanimation will play on the next startup.</div>
+        </div>
+      </div>
+    </div>
+    <div class="warning">
+      <strong>Note:</strong> If the animation doesn't change after reboot, clear the theme cache manually:
+      Settings → Additional Settings → Theme → Clear cache → Reboot again.
+    </div>
+  </section>
+
+  <!-- WHAT IT DOES -->
+  <section>
+    <div class="section-label">What It Does</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Path</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Replaces system bootanimation</td>
+          <td><code>/system/media/bootanimation.zip</code></td>
+        </tr>
+        <tr>
+          <td>Patches HyperOS product path</td>
+          <td><code>/system/product/media/bootanimation.zip</code></td>
+        </tr>
+        <tr>
+          <td>Clears theme cache on install</td>
+          <td><code>/data/resource-cache/</code></td>
+        </tr>
+        <tr>
+          <td>Sets file permissions</td>
+          <td><code>644</code> — system-safe</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TESTED ON -->
+  <section>
+    <div class="section-label">Tested On</div>
+    <table>
+      <thead>
+        <tr><th>Device</th><th>OS</th><th>Root</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Redmi Note 14 4G</td>
+          <td>HyperOS 3</td>
+          <td>KernelSU</td>
+          <td><span class="status-ok">✓ Working</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ANIMATION SPECS -->
+  <section>
+    <div class="section-label">Animation Specs</div>
+    <div class="codeblock">
+<span class="key">Resolution</span>  <span class="val">1080 × 2400</span>
+<span class="key">Frame rate</span>  <span class="val">30 fps</span>
+<span class="key">Part 0</span>      <span class="val">plays once   <span class="comment">// intro</span></span>
+<span class="key">Part 1</span>      <span class="val">loops        <span class="comment">// idle</span></span>
+<span class="key">Format</span>      <span class="val">PNG frames → ZIP</span>
+<span class="key">Tool</span>        <span class="val">FFmpeg</span>
+    </div>
+  </section>
+
+  <!-- FILE STRUCTURE -->
+  <section>
+    <div class="section-label">File Structure</div>
+    <div class="tree">
+<span class="dir">ermahan_bootanim/</span>
+├── <span class="highlight">module.prop</span>
+├── <span class="highlight">customize.sh</span>
+└── <span class="dir">system/</span>
+    ├── <span class="dir">media/</span>
+    │   └── <span class="file">bootanimation.zip</span>
+    └── <span class="dir">product/</span>
+        └── <span class="dir">media/</span>
+            └── <span class="file">bootanimation.zip</span>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="author-block">
+      <div class="author-name">Qarabai Ermahan</div>
+      <div class="author-links">
+        <a href="https://github.com/EromaQarabai">GitHub</a>
+        <a href="https://tiktok.com/@qarabai.ermahan">TikTok</a>
+        <a href="https://t.me/QarabaiErmahan">Telegram</a>
+      </div>
+    </div>
+    <div class="made-in">
+      Made in Kazakhstan 🇰🇿<br>
+      Built with FFmpeg · Tested on real hardware
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
