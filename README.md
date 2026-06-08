@@ -69,7 +69,7 @@ Handcrafted frame-by-frame. No bloat. Just a better boot experience.
 
 | Device | OS | Root | Status |
 |---|---|---|---|
-| Redmi Note 14 4G | HyperOS 3 | KernelSU | ✅ Working |
+| Redmi Note 14 4G | HyperOS 3 | Magic | ✅ Working |
 
 > Confirmed working on other HyperOS devices as well. If you test on a different device, feel free to open an issue with your result.
 
